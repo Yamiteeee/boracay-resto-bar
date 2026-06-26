@@ -29,17 +29,12 @@ export default function Home() {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
 
-      // Intercept local hash routing clicks cleanly
       if (anchor && anchor.hash && anchor.origin === window.location.origin) {
         const cleanHash = anchor.hash.replace('#', '');
-        
-        // Target sections by ID strings explicitly
         const targetElement = document.getElementById(cleanHash);
         
         if (targetElement) {
           e.preventDefault();
-          
-          // Native browser window scroll mapping (Leaves carousels and sub-overflow divs alone!)
           window.scrollTo({
             top: targetElement.offsetTop,
             behavior: 'smooth'
@@ -53,7 +48,8 @@ export default function Home() {
   }, [isLoading]);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#faf9f6] font-sans antialiased text-stone-900 selection:bg-amber-500/20">
+    // FIXED: Added absolute containment rules to stop horizontal shifting/dragging on mobile layout boundaries
+    <div className="relative min-h-screen w-full bg-[#faf9f6] font-sans antialiased text-stone-900 selection:bg-amber-500/20 overflow-x-hidden positioning-isolation-layer-fix">
       
       {/* ── HIGH-END BACKGROUND TEXTURE & GRADIENT MATRIX ── */}
       <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.015] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii41Ii8+Cjwvc3ZnPg==')] bg-repeat" />
@@ -63,14 +59,15 @@ export default function Home() {
         {isLoading && <LogoAnimationEntry />}
       </AnimatePresence>
 
-      <div className="min-h-screen w-full flex flex-col relative z-10">
+      {/* FIXED: The inner shell layer explicitly sets overflow-x-hidden to cut off sliding components mid-animation */}
+      <div className="min-h-screen w-full flex flex-col relative z-10 overflow-x-hidden">
         <Navbar />
 
-        <main className="w-full flex-grow">
-          <PageAnimation className="flex flex-col w-full">
+        <main className="w-full flex-grow overflow-x-hidden">
+          <PageAnimation className="flex flex-col w-full overflow-x-hidden">
             
             {/* HERO SECTION */}
-            <div id="hero" className="w-full">
+            <div id="hero" className="w-full overflow-x-hidden">
               <motion.div 
                 variants={slipLeftVariants}
                 initial="hidden"
@@ -83,7 +80,7 @@ export default function Home() {
             </div>
             
             {/* OUR STORY SECTION */}
-            <div id="our-story" className="w-full">
+            <div id="our-story" className="w-full overflow-x-hidden">
               <motion.div 
                 variants={slipRightVariants}
                 initial="hidden"
@@ -96,7 +93,7 @@ export default function Home() {
             </div>
             
             {/* MENU SECTION */}
-            <div id="menu" className="w-full">
+            <div id="menu" className="w-full overflow-x-hidden">
               <motion.div 
                 variants={slipLeftVariants}
                 initial="hidden"
@@ -109,7 +106,7 @@ export default function Home() {
             </div>
             
             {/* RESERVATION BOOKING SECTION */}
-            <div id="reserve" className="w-full">
+            <div id="reserve" className="w-full overflow-x-hidden">
               <motion.div
                 variants={slipRightVariants}
                 initial="hidden"
@@ -125,7 +122,7 @@ export default function Home() {
         </main>
 
         {/* --- PREMIUM RESPONSIVE FOOTER --- */}
-        <footer className="bg-stone-950 text-stone-400 pt-16 md:pt-20 pb-10 md:pb-12 text-sm border-t border-stone-900/60 relative z-10 w-full">
+        <footer className="bg-stone-950 text-stone-400 pt-16 md:pt-20 pb-10 md:pb-12 text-sm border-t border-stone-900/60 relative z-10 w-full overflow-x-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-12 md:pb-16 border-b border-stone-900/60 items-start">
               <div className="sm:col-span-2 lg:col-span-4 space-y-4 text-center lg:text-left">
