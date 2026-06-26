@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Markdown
+# Aplaya Boracay – Premium Beachfront Restaurant & Lounge
+
+A high-performance, visually stunning, single-page web application built for **Aplaya Boracay**, featuring fluid editorial animations, high-contrast typography, structural responsive layout design, and a custom touch/scroll-isolated menu coverflow matrix.
+
+##  Features
+
+* **Cinematic Page Transitions:** Implements fine-tuned Framer Motion variants (`slipLeft`, `slipRight`) tracking structural entry thresholds.
+* **Touch & Scroll Isolated Menu Matrix:** Custom interactive carousel supporting multi-directional tracking rules (`wheel`, `drag`, `touch`) with strict overscroll containment to isolate page-bleed.
+* **Native Smooth Navigation:** Pure local routing architecture mapping layout sections cleanly across mobile and desktop viewport constraints.
+* **Premium Visual Foundations:** Elegant underlying noise matrix backgrounds, immersive editorial typography hierarchies, and dark-inversion glass containers.
+* **Optimized Performance:** Built on Next.js 14/15 App Router utilizing `next/font` optimization and hardware-accelerated CSS translation layers.
+
+---
+
+## Tech Stack
+
+* **Framework:** Next.js (App Router)
+* **Styling:** Tailwind CSS (Antialiased typography, fluid spacing, micro-gradients)
+* **Animation Engine:** Framer Motion (Hardware accelerated `will-change-transform` workflows)
+* **Language:** TypeScript (Strict type interfaces)
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
+Ensure you have [Node.js](https://nodejs.org/) installed on your machine.
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/Yamiteeee/boracay-resto-bar.git](https://github.com/your-username/boracay-resto-bar.git)
+Navigate to the project directory:
+
+Bash
+cd boracay-resto-bar
+Install production and development dependencies:
+
+Bash
+npm install
+Development Server
+Run the local environmental instance:
+
+Bash
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
-```
+Open http://localhost:3000 inside your browser window to interact with the environment.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🗺️ Project Architecture
+Plaintext
+   ```bash
+src/
+├── app/
+│   ├── layout.tsx         # Global fonts, metadata wrappers, and context injects
+│   └── page.tsx           # Home entry orchestrating layout structure and animations
+├── components/
+│   ├── Animation/         # PageAnimation wrappers and shared variants
+│   ├── Card.tsx           # Reusable menu item components
+│   ├── Navbar.tsx         # Anchor routing navigation matrix
+│   └── Logo.tsx           # Global vectorized brand asset
+├── hooks/
+│   └── useMenu.ts         # Carousel control state, limits, and math offsets
+└── sections/
+    ├── Hero.tsx           # High-impact landing zone
+    ├── OurStory.tsx       # Narrative brand block
+    ├── Menu.tsx           # Multi-mode grid/carousel showcase
+    └── Reservation.tsx    # Digital table booking interface
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+  ```
+ Mobile & Performance Fixes Implemented
+Layout Shifting/Bleeding Fixed: Isolated horizontal entries via recursive overflow-x-hidden wrapper blocks to prevent canvas expansion during mobile elastic gestures.
 
-## Learn More
+Carousel Event Proximity Fixed: Patched event propagation bubbling using explicit e.stopPropagation() handlers and custom delta calculations to isolate wheel events from moving the background page.
 
-To learn more about Next.js, take a look at the following resources:
+Strict Type Assurances: Type-casted DOM selectors safely (as HTMLElement) to suppress rigid compilation errors (TS2345) during CI/CD build actions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+ Deployment
+This platform is ready to deploy directly via the Vercel Platform.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To build the static application assets locally:
 
-## Deploy on Vercel
+Bash
+npm run build
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To view this site, here is the live link: [Live Preview](https://boracay-resto-bar.vercel.app)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
