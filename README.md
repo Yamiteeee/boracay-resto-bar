@@ -89,3 +89,5 @@ To build the static application assets locally:
 Bash
 npm run build
 
+To view this site, here is the live link: [Live Preview](https://boracay-resto-bar.vercel.app)
+
