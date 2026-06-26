@@ -1,5 +1,6 @@
-// src/hooks/useReservation.ts
-import { useState, useMemo, useEffect } from 'react';
+'use client';
+
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
   AVAILABLE_TIME_SLOTS, 
   ZONE_OPTIONS, 
@@ -8,22 +9,13 @@ import {
 
 export type StepState = 'search' | 'details' | 'success';
 
-interface MockBooking {
-  date: string;
-  zone: string;
-  time: string;
-}
-
 export function useReservation() {
   const [step, setStep] = useState<StepState>('search');
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState<string>('');
-  
-  // Guard state to delay rendering dynamic evaluations until mounted
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // This only fires on the client machine after hydration is complete
     setIsHydrated(true);
     setSelectedDate(new Date().toISOString().split('T')[0]);
   }, []);
@@ -37,12 +29,12 @@ export function useReservation() {
     phone: '',
   });
 
-  // Safe generation matrix wrapped securely inside useMemo
-  const bookingDatabase = useMemo(() => {
-    // Return an empty array on the server so it matches the initial client frame
-    if (!isHydrated) return [];
+  // ─── 1. OPTIMIZED: CREATE AN O(1) LOOKUP HASH MAP ───
+  // Instead of an array of thousands of records, we store counts directly: { "2026-06-27_z1_6:30 PM": 4 }
+  const bookingDatabaseMap = useMemo(() => {
+    if (!isHydrated) return new Map<string, number>();
 
-    const bookings: MockBooking[] = [];
+    const countsMap = new Map<string, number>();
     const totalDaysToPopulate = 60; 
 
     for (let i = 0; i < totalDaysToPopulate; i++) {
@@ -70,75 +62,90 @@ export function useReservation() {
           }
 
           const finalCount = Math.min(shouldBookCount, MAX_CAPACITY_PER_SLOT);
-          for (let count = 0; count < finalCount; count++) {
-            bookings.push({
-              date: dateStr,
-              zone: zone.id,
-              time: slot.time
-            });
+          if (finalCount > 0) {
+            const cacheKey = `${dateStr}_${zone.id}_${slot.time}`;
+            countsMap.set(cacheKey, finalCount);
           }
         });
       });
     }
-    return bookings;
+    return countsMap;
   }, [isHydrated]);
 
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
+  // ─── 2. MEMOIZED CALENDAR CALCULATIONS ───
+  const calendarDays = useMemo(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
     const days = [];
     const firstDayIndex = new Date(year, month, 1).getDay();
+    
     for (let i = 0; i < firstDayIndex; i++) days.push(null);
     const totalDays = new Date(year, month + 1, 0).getDate();
     for (let d = 1; d <= totalDays; d++) days.push(new Date(year, month, d));
+    
     return days;
-  };
+  }, [currentMonth]);
 
-  const handleMonthChange = (direction: 'next' | 'prev') => {
-    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + (direction === 'next' ? 1 : -1), 1));
-  };
+  const monthYearString = useMemo(() => {
+    return currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+  }, [currentMonth]);
 
-  const currentSelectedZoneObj = ZONE_OPTIONS.find(z => z.id === formData.zone) || ZONE_OPTIONS[0];
-  const monthYearString = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
-  const calendarDays = getDaysInMonth(currentMonth);
-  const todayStr = isHydrated ? new Date().toISOString().split('T')[0] : '';
+  const currentSelectedZoneObj = useMemo(() => {
+    return ZONE_OPTIONS.find(z => z.id === formData.zone) || ZONE_OPTIONS[0];
+  }, [formData.zone]);
 
-  const getBookingCountForSlot = (date: string, zone: string, time: string) => {
+  const todayStr = useMemo(() => {
+    return isHydrated ? new Date().toISOString().split('T')[0] : '';
+  }, [isHydrated]);
+
+  // ─── 3. LENTICULAR SPEED STATUS LOOKUPS ───
+  const getBookingCountForSlot = useCallback((date: string, zone: string, time: string) => {
     if (!isHydrated) return 0;
-    return bookingDatabase.filter(res => res.date === date && res.zone === zone && res.time === time).length;
-  };
+    return bookingDatabaseMap.get(`${date}_${zone}_${time}`) || 0;
+  }, [isHydrated, bookingDatabaseMap]);
 
-  const getDateBookingStatus = (dateStr: string, zoneId: string) => {
+  const getDateBookingStatus = useCallback((dateStr: string, zoneId: string) => {
     if (!isHydrated) return 'available';
     
-    const slotsStatus = AVAILABLE_TIME_SLOTS.map(slot => {
-      return getBookingCountForSlot(dateStr, zoneId, slot.time) >= MAX_CAPACITY_PER_SLOT;
-    });
+    let fullyBooked = true;
+    let hasSomeBookings = false;
 
-    const fullyBooked = slotsStatus.every(status => status === true);
-    const hasSomeBookings = bookingDatabase.some(res => res.date === dateStr && res.zone === zoneId);
+    for (const slot of AVAILABLE_TIME_SLOTS) {
+      const count = bookingDatabaseMap.get(`${dateStr}_${zoneId}_${slot.time}`) || 0;
+      if (count < MAX_CAPACITY_PER_SLOT) {
+        fullyBooked = false;
+      }
+      if (count > 0) {
+        hasSomeBookings = true;
+      }
+    }
 
     if (fullyBooked) return 'full';
     if (hasSomeBookings) return 'partial';
     return 'available';
-  };
+  }, [isHydrated, bookingDatabaseMap]);
 
-  const updateZone = (zoneId: string) => {
+  // ─── 4. STABILIZED CALL-STACK DISPATCH ACTIONS ───
+  const handleMonthChange = useCallback((direction: 'next' | 'prev') => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + (direction === 'next' ? 1 : -1), 1));
+  }, []);
+
+  const updateZone = useCallback((zoneId: string) => {
     setFormData(prev => ({ ...prev, zone: zoneId, time: '' }));
-  };
+  }, []);
 
-  const updateTime = (timeStr: string) => {
+  const updateTime = useCallback((timeStr: string) => {
     setFormData(prev => ({ ...prev, time: timeStr }));
-  };
+  }, []);
 
-  const updateGuests = (guestsCount: string) => {
+  const updateGuests = useCallback((guestsCount: string) => {
     setFormData(prev => ({ ...prev, guests: guestsCount }));
-  };
+  }, []);
 
-  const resetBooking = () => {
+  const resetBooking = useCallback(() => {
     setFormData(prev => ({ ...prev, time: '' }));
     setStep('search');
-  };
+  }, []);
 
   return {
     step,
@@ -146,6 +153,7 @@ export function useReservation() {
     selectedDate,
     setSelectedDate,
     formData,
+    setFormData, // Exposed to let components directly bind textual input targets
     currentSelectedZoneObj,
     monthYearString,
     calendarDays,
@@ -158,6 +166,6 @@ export function useReservation() {
     updateGuests,
     resetBooking,
     MAX_CAPACITY_PER_SLOT,
-    isHydrated // Exposed if you want to conditionally render loaders
+    isHydrated
   };
 }

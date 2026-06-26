@@ -1,120 +1,106 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Hero from '@/sections/Hero';
 import OurStory from '@/sections/OurStory';
 import Menu from '@/sections/Menu';
-import Logo from '@/components/Logo';
+import Footer from '@/sections/Footer';
 import LogoAnimationEntry from '@/components/Animation/LogoAnimationEntry';
-import PageAnimation, { slipLeftVariants, slipRightVariants } from '@/components/Animation/PageAnimation';
+import PageAnimation from '@/components/Animation/PageAnimation';
 import Reservation from '@/sections/Reservation';
-import SmoothScroll from '@/components/SmoothScroll'; // Imported your premium Lenis system
+import SmoothScroll from '@/components/SmoothScroll';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2400);
+    const timer = setTimeout(() => setIsLoading(false), 2400);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    // INITIALIZATION WRAPPER: Implements fluid inertia scrolling page-wide
-    <SmoothScroll>
-      {/* FIXED: Added absolute containment rules to stop horizontal shifting/dragging on mobile layout boundaries */}
-      <div className="relative min-h-screen w-full bg-[#faf9f6] font-sans antialiased text-stone-900 selection:bg-amber-500/20 overflow-x-hidden positioning-isolation-layer-fix">
-        
-        {/* ── HIGH-END BACKGROUND TEXTURE & GRADIENT MATRIX ── */}
-        <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.015] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii41Ii8+Cjwvc3ZnPg==')] bg-repeat" />
-        <div className="absolute inset-0 pointer-events-none z-0 bg-gradient-to-b from-transparent via-stone-100/50 to-stone-200/30" />
+    // 🚨 ULTIMATE MOBILE FIX: Force strict viewport dimensions on the outer wrapper
+    <div className="relative min-h-screen w-full max-w-full bg-[#faf9f6] font-sans antialiased text-stone-900 selection:bg-amber-500/20 overflow-x-hidden overscroll-behavior-x-none">
+      
+      {/* ── 1. SHORT-CIRCUIT LOADER ── */}
+      <AnimatePresence mode="wait">
+        {isLoading && <LogoAnimationEntry key="loader" />}
+      </AnimatePresence>
 
-        <AnimatePresence mode="wait">
-          {isLoading && <LogoAnimationEntry />}
-        </AnimatePresence>
+      {/* ── 2. CONDITIONAL MOUNT ── */}
+      {!isLoading && (
+        <SmoothScroll>
+          {/* ── Background textures ── */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none z-0 opacity-[0.012] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii41Ii8+Cjwvc3ZnPg==')] bg-repeat contain-strict"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none z-0 bg-gradient-to-b from-transparent via-stone-100/40 to-stone-200/20 contain-strict"
+          />
 
-        {/* FIXED: The inner shell layer explicitly sets overflow-x-hidden to cut off sliding components mid-animation */}
-        <div className="min-h-screen w-full flex flex-col relative z-10 overflow-x-hidden">
-          <Navbar />
+          {/* Inner layout shell */}
+          {/* 🚨 ULTIMATE MOBILE FIX: Added w-screen and max-w-full to prevent third-party wrappers like SmoothScroll from widening the viewport layout */}
+          <div className="min-h-screen w-screen max-w-full flex flex-col relative z-10 overflow-x-hidden">
+            <Navbar />
 
-          <main className="w-full flex-grow overflow-x-hidden">
-            <PageAnimation className="flex flex-col w-full overflow-x-hidden">
-              
-              {/* HERO SECTION */}
-              <div id="hero" className="w-full overflow-x-hidden">
-                <motion.div 
-                  variants={slipLeftVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.02 }}
-                  className="w-full bg-transparent will-change-transform backface-hidden"
+            {/* 🚨 ULTIMATE MOBILE FIX: Forced main tag container bounds */}
+            <main className="w-full max-w-full flex-grow layout-containment-shell overflow-x-hidden px-0">
+              <PageAnimation className="flex flex-col w-full max-w-full overflow-x-hidden">
+
+                {/* HERO SECTION */}
+                <div 
+                  id="hero" 
+                  className="w-full max-w-full bg-transparent transform-gpu overflow-hidden" 
+                  style={{ contentVisibility: 'auto', containIntrinsicSize: '0 var(--hero-height, 650px)' }}
                 >
                   <Hero />
-                </motion.div>
-              </div>
-              
-              {/* OUR STORY SECTION */}
-              <div id="our-story" className="w-full overflow-x-hidden">
-                <motion.div 
-                  variants={slipRightVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.05 }}
-                  className="w-full bg-transparent will-change-transform backface-hidden pb-4 md:pb-8"
+                </div>
+
+                {/* OUR STORY SECTION */}
+                <div 
+                  id="our-story" 
+                  className="w-full max-w-full bg-transparent pb-6 md:pb-8 transform-gpu overflow-hidden" 
+                  style={{ contentVisibility: 'auto', containIntrinsicSize: '0 var(--story-height, 750px)' }}
                 >
                   <OurStory />
-                </motion.div>
-              </div>
-              
-              {/* MENU SECTION */}
-              <div id="menu" className="w-full overflow-x-hidden">
-                <motion.div 
-                  variants={slipLeftVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.05 }}
-                  className="w-full bg-transparent will-change-transform backface-hidden -mt-8 md:-mt-12 pt-0 pb-16 md:pb-24"
+                </div>
+
+                {/* MENU SECTION */}
+                <div 
+                  id="menu" 
+                  className="w-full max-w-full bg-transparent mt-0 md:-mt-12 pt-0 pb-16 md:pb-24 transform-gpu overflow-hidden" 
+                  style={{ contentVisibility: 'auto', containIntrinsicSize: '0 var(--menu-height, 600px)' }}
                 >
                   <Menu />
-                </motion.div>
-              </div>
-              
-              {/* RESERVATION BOOKING SECTION */}
-              <div id="reserve" className="w-full overflow-x-hidden">
-                <motion.div
-                  variants={slipRightVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.05 }}
-                  className="w-full bg-transparent will-change-transform backface-hidden"
+                </div>
+
+                {/* RESERVATION SECTION */}
+                <div 
+                  id="reserve" 
+                  className="w-full max-w-full bg-transparent transform-gpu overflow-hidden" 
+                  style={{ contentVisibility: 'auto', containIntrinsicSize: '0 var(--reserve-height, 850px)' }}
                 >
                   <Reservation />
-                </motion.div>
-              </div>
-
-            </PageAnimation>
-          </main>
-
-          {/* --- PREMIUM RESPONSIVE FOOTER --- */}
-          <footer className="bg-stone-950 text-stone-400 pt-16 md:pt-20 pb-10 md:pb-12 text-sm border-t border-stone-900/60 relative z-10 w-full overflow-x-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-12 md:pb-16 border-b border-stone-900/60 items-start">
-                <div className="sm:col-span-2 lg:col-span-4 space-y-4 text-center lg:text-left">
-                  <div className="flex justify-center lg:justify-start transform scale-90 origin-center lg:origin-left opacity-90 transition-all">
-                    <Logo iconSize={36} />
-                  </div>
-                  <p className="text-xs text-stone-500 font-light max-w-sm mx-auto lg:mx-0 leading-relaxed">
-                    Experiencing beachfront dining at its finest. Fresh local ingredients, handcrafted cocktails, and legendary Boracay sunsets.
-                  </p>
                 </div>
-              </div>
-            </div>
-          </footer>
-        </div>
-      </div>
-    </SmoothScroll>
+
+                {/* FOOTER SECTION */}
+                <div 
+                  id="footer" 
+                  className="w-full max-w-full bg-transparent transform-gpu overflow-hidden"
+                  style={{ contentVisibility: 'auto', containIntrinsicSize: '0 var(--footer-height, 450px)' }}
+                >
+                  <Footer />
+                </div>
+
+              </PageAnimation>
+            </main>
+          </div>
+        </SmoothScroll>
+      )}
+    </div>
   );
 }

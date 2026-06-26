@@ -50,13 +50,15 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full flex items-center justify-between">
           
-          {/* Left Side: Scaled Logo Unit */}
+         {/* Left Side: Scaled Logo Unit */}
           <Link 
             href="#hero" 
             onClick={() => setIsOpen(false)}
-            className="origin-left transform scale-[0.65] sm:scale-[0.75] hover:opacity-90 transition-all duration-300 relative z-50"
+            className="hover:opacity-90 transition-opacity duration-300 relative z-50 block"
           >
-            <Logo iconSize={36} />
+            {/* Using 'sm' handles the scaling perfectly and natively without font blurring */}
+            <Logo size="sm" className="sm:hidden" />
+            <Logo size="md" className="hidden sm:flex" />
           </Link>
 
           {/* Desktop & Tablet Navigation Layout */}

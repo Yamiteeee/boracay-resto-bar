@@ -1,47 +1,47 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useCallback, useMemo } from 'react';
 import { STORY_CHAPTERS } from '@/data/ourStoryData';
 
 export function useStory() {
   const [activeId, setActiveId] = useState(0);
-  const currentChapter = STORY_CHAPTERS[activeId];
-  const totalChapters = STORY_CHAPTERS.length;
+  
+  // ─── 1. FREEZE STATIC LENGTH CALCULATIONS ───
+  const totalChapters = useMemo(() => STORY_CHAPTERS.length, []);
 
-  const selectChapter = (id: number) => {
+  // ─── 2. STABILIZE ACTIVE DATA DERIVATION ───
+  const currentChapter = useMemo(() => STORY_CHAPTERS[activeId], [activeId]);
+
+  // ─── 3. MEMOIZE NAVIGATION ENGINE TO PREVENT RE-RENDERS ───
+  const selectChapter = useCallback((id: number) => {
     setActiveId(id);
-  };
+  }, []);
 
-  const nextChapter = () => {
-    if (activeId < totalChapters - 1) {
-      setActiveId((prev) => prev + 1);
-    } else {
-      setActiveId(0); // Optional: Loop back to first chapter
-    }
-  };
+  const nextChapter = useCallback(() => {
+    setActiveId((prev) => (prev < totalChapters - 1 ? prev + 1 : 0));
+  }, [totalChapters]);
 
-  const prevChapter = () => {
-    if (activeId > 0) {
-      setActiveId((prev) => prev - 1);
-    } else {
-      setActiveId(totalChapters - 1); // Optional: Loop back to last chapter
-    }
-  };
+  const prevChapter = useCallback(() => {
+    setActiveId((prev) => (prev > 0 ? prev - 1 : totalChapters - 1));
+  }, [totalChapters]);
 
-  // Mobile Drag/Swipe Gesture Handler for Framer Motion
-  const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 40; // minimum pixels moved to trigger slide change
+  // ─── 4. OPTIMIZE GESTURE RE-BINDING MATRIX ───
+  // Using functional updates inside handlers avoids re-creating this function on every slide index update,
+  // which means Framer Motion doesn't clear and re-bind event listeners mid-drag.
+  const handleDragEnd = useCallback((event: any, info: any) => {
+    const swipeThreshold = 40; 
     if (info.offset.x < -swipeThreshold) {
       nextChapter();
     } else if (info.offset.x > swipeThreshold) {
       prevChapter();
     }
-  };
+  }, [nextChapter, prevChapter]);
 
   return {
     activeId,
     currentChapter,
     totalChapters,
-    storyChapters: STORY_CHAPTERS,
+    storyChapters: STORY_CHAPTERS, // Static reference, safe to pass directly
     selectChapter,
     handleDragEnd,
     nextChapter,
