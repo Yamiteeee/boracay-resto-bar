@@ -18,7 +18,6 @@ export default function Menu() {
   } = useMenu();
 
   return (
-    /* FIXED: Changed 'bg-stone-50' to 'bg-transparent' so the global layout noise texture can bleed through */
     <section id="menu" className="py-16 md:py-24 bg-transparent select-none overflow-hidden relative">
       
       {/* Editorial Watermark Accent Backdrop */}
@@ -30,18 +29,14 @@ export default function Menu() {
         
         {/* Luxury Spiced Separation Header Frame */}
         <div className="relative max-w-3xl mx-auto mb-20 text-center">
-          {/* FIXED: Dark elegant inversion container */}
           <div className="relative bg-stone-900 border border-stone-800 p-8 sm:p-12 rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.15)] overflow-hidden">
-            {/* FIXED: High-impact underlying fire glow */}
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl pointer-events-none" />
             
             <div className="relative z-10 space-y-4">
-              {/* FIXED: Vibrant sunburst badge layout */}
               <span className="inline-block text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber-400 font-bold bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-400/20">
                 Fresh & Handcrafted
               </span>
               
-              {/* FIXED: High contrast white layout text mixing with bright sunset gradients */}
               <h2 className="text-4xl font-black text-stone-50 tracking-tight md:text-5xl font-serif italic uppercase pt-1">
                 Island Flavors <span className="font-sans not-italic font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 block mt-2 sm:inline sm:mt-0">
                   & Cocktails
@@ -50,7 +45,6 @@ export default function Menu() {
               
               <div className="w-12 h-[2px] bg-orange-500/40 mx-auto my-4 rounded-full" />
               
-              {/* FIXED: Muted light text for premium readable editorial contrast */}
               <p className="text-stone-400 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed tracking-wide">
                 {isCarouselMode 
                   ? "Use your mouse wheel or swipe on mobile to explore our beachfront collection."
@@ -88,6 +82,7 @@ export default function Menu() {
         <div ref={displayAreaRef} className="min-h-[520px] relative flex flex-col justify-center items-center w-full">
           <AnimatePresence mode="wait">
             {isCarouselMode ? (
+              
               /* --- WIDE COVERFLOW CAROUSEL MODE --- */
               <motion.div
                 key="carousel"
@@ -95,7 +90,24 @@ export default function Menu() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="relative w-full max-w-5xl h-[460px] flex items-center justify-center cursor-ew-resize touch-pan-y"
+                className="relative w-full max-w-5xl h-[460px] flex items-center justify-center cursor-ew-resize overscroll-contain touch-none"
+                // FIXED: Direct wheel interaction controller
+                onWheel={(e) => {
+                  // Don't let the main window scroll background
+                  e.preventDefault();
+                  e.stopPropagation();
+
+                  // Use either horizontal or vertical wheel movement to switch slides
+                  const scrollDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+
+                  if (scrollDelta > 20) {
+                    // Scrolling down/right triggers Next
+                    if (currentIndex < filteredItems.length - 1) nextSlide();
+                  } else if (scrollDelta < -20) {
+                    // Scrolling up/left triggers Previous
+                    if (currentIndex > 0) prevSlide();
+                  }
+                }}
               >
                 <AnimatePresence initial={false}>
                   {filteredItems.map((item, index) => {

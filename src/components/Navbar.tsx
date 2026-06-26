@@ -25,6 +25,20 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  // Clean, reusable explicit animation scroll runner
+  const handleScrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    setIsOpen(false);
+
+    // Timeout allows the mobile drawer state to clear cleanly before calculating heights
+    setTimeout(() => {
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
+  };
+
   return (
     <>
       <header 
@@ -47,17 +61,30 @@ export default function Navbar() {
 
           {/* Desktop & Tablet Navigation Layout */}
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-sans font-bold tracking-[0.25em] uppercase text-stone-400">
-            <a href="#our-story" className="hover:text-amber-500 transition-colors duration-200">Story</a>
-            <a href="#menu" className="hover:text-amber-500 transition-colors duration-200">Menu</a>
+            <a 
+              href="#our-story" 
+              onClick={(e) => handleScrollToSection(e, 'our-story')}
+              className="hover:text-amber-500 transition-colors duration-200"
+            >
+              Story
+            </a>
+            <a 
+              href="#menu" 
+              onClick={(e) => handleScrollToSection(e, 'menu')}
+              className="hover:text-amber-500 transition-colors duration-200"
+            >
+              Menu
+            </a>
             <a 
               href="#reserve" 
+              onClick={(e) => handleScrollToSection(e, 'reserve')}
               className="px-4 py-2 border border-amber-600/30 rounded text-amber-500 hover:bg-amber-500 hover:text-stone-950 hover:border-amber-500 transition-all duration-300"
             >
               Reservations
             </a>
           </nav>
 
-          {/* Right Side: Hamburger Control (Visible on Mobile/Tablet down to md) */}
+          {/* Right Side: Hamburger Control */}
           <button 
             onClick={() => setIsOpen(!isOpen)}
             className="flex md:hidden flex-col justify-center items-end w-8 h-8 relative z-50 focus:outline-none space-y-1.5 p-1"
@@ -80,22 +107,22 @@ export default function Navbar() {
         <nav className="flex flex-col items-center gap-8 text-sm font-sans font-bold tracking-[0.3em] uppercase text-stone-300">
           <a 
             href="#our-story" 
-            onClick={() => setIsOpen(false)}
+            onClick={(e) => handleScrollToSection(e, 'our-story')}
             className="hover:text-amber-500 transition-colors duration-200 py-2 transform transition-transform active:scale-95"
           >
             Story
           </a>
           <a 
             href="#menu" 
-            onClick={() => setIsOpen(false)}
+            onClick={(e) => handleScrollToSection(e, 'menu')}
             className="hover:text-amber-500 transition-colors duration-200 py-2 transform transition-transform active:scale-95"
           >
             Menu
           </a>
-          <a 
+          <a
             href="#reserve" 
-            onClick={() => setIsOpen(false)}
-            className="mt-4 px-8 py-3 border border-amber-500 rounded text-amber-500 hover:bg-amber-500 hover:text-stone-950 transition-all duration-300 text-xs tracking-[0.25em]"
+            onClick={(e) => handleScrollToSection(e, 'reserve')}
+            className="mt-4 inline-block text-center px-8 py-3 border border-amber-500 rounded text-amber-500 hover:bg-amber-500 hover:text-stone-950 transition-all duration-300 text-xs tracking-[0.25em]"
           >
             Reservations
           </a>
