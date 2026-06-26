@@ -1,29 +1,30 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function LogoAnimationEntry() {
-  const [shouldRender, setShouldRender] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    // Elegant transition orchestrator handled completely on system timers
-    const exitTimer = setTimeout(() => setIsExiting(true), 2500);
-    const unmountTimer = setTimeout(() => setShouldRender(false), 3600);
-
-    return () => {
-      clearTimeout(exitTimer);
-      clearTimeout(unmountTimer);
-    };
+    // Triggers the inner text blur/melt slightly before the whole screen fades
+    const exitTimer = setTimeout(() => setIsExiting(true), 2100);
+    return () => clearTimeout(exitTimer);
   }, []);
 
-  if (!shouldRender) return null;
-
   return (
-    <div className="fixed inset-0 z-[9999] bg-[#0a0806] flex items-center justify-center select-none overflow-hidden pointer-events-none transform translate-z-0">
+    <motion.div 
+      initial={{ opacity: 1 }}
+      exit={{ 
+        opacity: 0,
+        scale: 1.03,
+        filter: "blur(15px) brightness(1.2)",
+        transition: { duration: 0.9, ease: [0.25, 1, 0.5, 1] } 
+      }}
+      className="fixed inset-0 z-[9999] bg-[#0a0806] flex items-center justify-center select-none overflow-hidden pointer-events-none transform translate-z-0"
+    >
       
       {/* ── HIGH PERFORMANCE COMPILER CSS ENGINE ── */}
       <style>{`
-        /* --- Hardware Acceleration & Composite Layers --- */
         .gpu-layer { will-change: transform, opacity; transform: translateZ(0); }
         
         /* --- Organic Palm Path Draws --- */
@@ -44,21 +45,20 @@ export default function LogoAnimationEntry() {
         @keyframes slideUp { to { transform: translateY(0%); } }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- Unified Curtain Exit (Single Layer, No Lines) --- */
-        .veil-block { position: absolute; inset: 0; bg-color: #0a0806; will-change: transform; transition: transform 1.05s cubic-bezier(0.76, 0, 0.24, 1); background: #0a0806; }
-        
-        .exit-triggered .veil-block { transform: translateY(-101%); }
-        .exit-triggered .core-content { opacity: 0; transform: scale(0.98); filter: blur(4px); transition: opacity 0.5s ease, transform 0.65s cubic-bezier(.16,1,.3,1), filter 0.5s ease; }
+        /* --- Inner Ice Text Dissolve --- */
+        .core-content { transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+        .exit-active .core-content { 
+          opacity: 0; 
+          transform: scale(0.95); 
+          filter: blur(8px) brightness(1.4); 
+        }
       `}</style>
 
       {/* ── CINEMATIC VEIL WRAPPER ── */}
-      <div className={`absolute inset-0 ${isExiting ? 'exit-triggered' : ''}`}>
+      <div className={`absolute inset-0 flex flex-col items-center justify-center ${isExiting ? 'exit-active' : ''}`}>
         
-        {/* Solid, unified background sheet */}
-        <div className="veil-block" />
-
         {/* ── CORE CENTRAL GRAPHIC ARCHITECTURE ── */}
-        <div className="core-content absolute inset-0 flex flex-col items-center justify-center z-10 gpu-layer">
+        <div className="core-content flex flex-col items-center justify-center gpu-layer">
           <div className="flex items-center gap-6">
 
             {/* Premium Palm Icon Axis */}
@@ -74,14 +74,12 @@ export default function LogoAnimationEntry() {
             {/* Typography Engine Structure */}
             <div className="flex flex-col">
               <div className="flex items-baseline font-serif text-[44px] text-[#e2cc90] tracking-[0.04em] leading-none">
-                {/* Aplaya Split */}
                 {['A', 'p', 'l', 'a', 'y', 'a'].map((char, i) => (
                   <span key={i} className="inline-block overflow-hidden h-[50px]">
                     <span className="inline-block char-up" style={{ animationDelay: `${750 + i * 45}ms` }}>{char}</span>
                   </span>
                 ))}
                 
-                {/* Bar Split */}
                 <div className="flex ml-2.5 font-sans text-[28px] font-light text-[#c4962a] tracking-[0.16em] uppercase">
                   {['b', 'a', 'r'].map((char, i) => (
                     <span key={i} className="inline-block overflow-hidden h-[34px]">
@@ -93,7 +91,7 @@ export default function LogoAnimationEntry() {
 
               {/* Subtitle Station Location */}
               <div className="mt-3 overflow-hidden h-3.5">
-                <div className="loc-up font-sans text-[9px] font-semibold tracking-[0.55em] text-amber-600/40 uppercase white-space-nowrap">
+                <div className="loc-up font-sans text-[9px] font-semibold tracking-[0.55em] text-amber-600/40 uppercase whitespace-nowrap">
                   Boracay
                 </div>
               </div>
@@ -102,7 +100,7 @@ export default function LogoAnimationEntry() {
           </div>
 
           {/* Symmetrical Balanced Dividing Rule */}
-          <div className="div-fade mt-8 flex items-center justify-center gap-3.5 opacity-0">
+          <div className="div-fade mt-8 flex items-center justify-center gap-3.5">
             <div className="w-14 h-[1px] bg-gradient-to-r from-transparent to-amber-500/20" />
             <div className="w-1 h-1 rounded-full bg-amber-500/30" />
             <div className="w-14 h-[1px] bg-gradient-to-l from-transparent to-amber-500/20" />
@@ -111,6 +109,6 @@ export default function LogoAnimationEntry() {
         </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 }

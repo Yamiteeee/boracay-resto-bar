@@ -11,11 +11,40 @@ export function useStory() {
     setActiveId(id);
   };
 
+  const nextChapter = () => {
+    if (activeId < totalChapters - 1) {
+      setActiveId((prev) => prev + 1);
+    } else {
+      setActiveId(0); // Optional: Loop back to first chapter
+    }
+  };
+
+  const prevChapter = () => {
+    if (activeId > 0) {
+      setActiveId((prev) => prev - 1);
+    } else {
+      setActiveId(totalChapters - 1); // Optional: Loop back to last chapter
+    }
+  };
+
+  // Mobile Drag/Swipe Gesture Handler for Framer Motion
+  const handleDragEnd = (event: any, info: any) => {
+    const swipeThreshold = 40; // minimum pixels moved to trigger slide change
+    if (info.offset.x < -swipeThreshold) {
+      nextChapter();
+    } else if (info.offset.x > swipeThreshold) {
+      prevChapter();
+    }
+  };
+
   return {
     activeId,
     currentChapter,
     totalChapters,
     storyChapters: STORY_CHAPTERS,
     selectChapter,
+    handleDragEnd,
+    nextChapter,
+    prevChapter
   };
 }

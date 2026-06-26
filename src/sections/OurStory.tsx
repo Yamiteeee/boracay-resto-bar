@@ -9,6 +9,7 @@ export default function OurStory() {
     totalChapters,
     storyChapters,
     selectChapter,
+    handleDragEnd,
   } = useStory();
 
   return (
@@ -57,7 +58,15 @@ export default function OurStory() {
                     y: isSelected ? -16 : yValue - 10,
                     filter: "brightness(1) contrast(1)",
                     transition: { duration: 0.2 }
+
+                    
                   }}
+                                            // 👇 ADD THESE DRAG PROPS HERE 👇
+                            drag={isSelected ? "x" : false} // Only allow dragging on the top active card
+                            dragConstraints={{ left: 0, right: 0 }}
+                            dragElastic={0.3}
+                            onDragEnd={handleDragEnd}
+                  
                   transition={{ type: "spring", stiffness: 100, damping: 22 }}
                   onClick={() => selectChapter(chapter.id)}
                   className="absolute inset-0 w-full h-[340px] sm:h-[400px] bg-stone-900 p-3 pb-10 sm:pb-12 cursor-pointer filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.3)] border border-stone-800/40 [clip-path:polygon(0.5%_1%,_99.5%_0%,_98%_35%,_100%_99%,_70%_97.5%,_35%_100%,_0%_98.5%,_1.5%_40%)] origin-bottom"

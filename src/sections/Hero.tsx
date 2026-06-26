@@ -26,13 +26,7 @@ export default function Hero() {
       id="hero" 
       className="relative min-h-screen w-full flex items-center bg-stone-950 select-none overflow-hidden pt-28 pb-20 lg:py-0"
     >
-      {/* Structural Editorial Grid Lines */}
-      <div className="absolute inset-0 grid grid-cols-4 pointer-events-none opacity-[0.015] z-0">
-        <div className="border-r border-stone-100 h-full" />
-        <div className="border-r border-stone-100 h-full" />
-        <div className="border-r border-stone-100 h-full" />
-        <div className="h-full" />
-      </div>
+      {/* FIXED: Removed the 4-column Structural Editorial Grid Lines from here */}
 
       {/* Ambient Radial Lighting Glows */}
       <div className="absolute top-1/4 left-1/2 lg:left-1/4 -translate-x-1/2 lg:translate-x-0 w-[320px] sm:w-[500px] h-[300px] sm:h-[400px] bg-amber-500/10 rounded-full blur-[90px] sm:blur-[130px] pointer-events-none z-0" />

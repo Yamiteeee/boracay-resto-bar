@@ -28,28 +28,36 @@ export default function Menu() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Luxury Spiced Separation Header Frame */}
-        <div className="relative max-w-3xl mx-auto mb-20 text-center">
-          <div className="relative bg-stone-100/80 backdrop-blur-md border border-stone-200/60 p-8 sm:p-12 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.02)] overflow-hidden">
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative max-w-3xl mx-auto mb-20 text-center">
+        {/* FIXED: Dark elegant inversion container */}
+        <div className="relative bg-stone-900 border border-stone-800 p-8 sm:p-12 rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.15)] overflow-hidden">
+          {/* FIXED: High-impact underlying fire glow */}
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 space-y-4">
+            {/* FIXED: Vibrant sunburst badge layout */}
+            <span className="inline-block text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber-400 font-bold bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-400/20">
+              Fresh & Handcrafted
+            </span>
             
-            <div className="relative z-10 space-y-4">
-              <span className="inline-block text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber-700 font-bold bg-amber-500/15 px-4 py-1.5 rounded-full border border-amber-500/20">
-                Fresh & Handcrafted
+            {/* FIXED: High contrast white layout text mixing with bright sunset gradients */}
+            <h2 className="text-4xl font-black text-stone-50 tracking-tight md:text-5xl font-serif italic uppercase pt-1">
+              Island Flavors <span className="font-sans not-italic font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 block mt-2 sm:inline sm:mt-0">
+                & Cocktails
               </span>
-              <h2 className="text-4xl font-black text-stone-900 tracking-tight md:text-5xl font-serif italic uppercase pt-1">
-                Island Flavors <span className="font-sans not-italic font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 block mt-2 sm:inline sm:mt-0">
-                  & Cocktails
-                </span>
-              </h2>
-              <div className="w-12 h-[2px] bg-stone-300 mx-auto my-4 rounded-full" />
-              <p className="text-stone-600 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed tracking-wide">
-                {isCarouselMode 
-                  ? "Use your mouse wheel or swipe on mobile to explore our beachfront collection."
-                  : "Sourced daily from local fishers and growers, mixed to perfection."}
-              </p>
-            </div>
+            </h2>
+            
+            <div className="w-12 h-[2px] bg-orange-500/40 mx-auto my-4 rounded-full" />
+            
+            {/* FIXED: Muted light text for premium readable editorial contrast */}
+            <p className="text-stone-400 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed tracking-wide">
+              {isCarouselMode 
+                ? "Use your mouse wheel or swipe on mobile to explore our beachfront collection."
+                : "Sourced daily from local fishers and growers, mixed to perfection."}
+            </p>
           </div>
         </div>
+      </div>
 
         {/* Category Filter Tabs */}
         <div className="flex justify-center items-center gap-2 p-1.5 bg-stone-200/60 backdrop-blur-sm rounded-full w-fit mx-auto mb-16 border border-stone-200">
