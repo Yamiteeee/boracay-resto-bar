@@ -18,46 +18,47 @@ export default function Menu() {
   } = useMenu();
 
   return (
-    <section id="menu" className="py-28 bg-stone-50 select-none overflow-hidden relative">
+    /* FIXED: Changed 'bg-stone-50' to 'bg-transparent' so the global layout noise texture can bleed through */
+    <section id="menu" className="py-16 md:py-24 bg-transparent select-none overflow-hidden relative">
       
       {/* Editorial Watermark Accent Backdrop */}
-      <div className="absolute right-[-5%] bottom-[5%] text-[18vw] font-serif font-black italic opacity-[0.02] text-stone-950 leading-none pointer-events-none uppercase tracking-tighter">
+      <div className="absolute right-[-5%] bottom-[5%] text-[18vw] font-serif font-black italic opacity-[0.035] text-stone-950 leading-none pointer-events-none uppercase tracking-tighter">
         Menu
       </div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Luxury Spiced Separation Header Frame */}
-      <div className="relative max-w-3xl mx-auto mb-20 text-center">
-        {/* FIXED: Dark elegant inversion container */}
-        <div className="relative bg-stone-900 border border-stone-800 p-8 sm:p-12 rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.15)] overflow-hidden">
-          {/* FIXED: High-impact underlying fire glow */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="relative z-10 space-y-4">
-            {/* FIXED: Vibrant sunburst badge layout */}
-            <span className="inline-block text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber-400 font-bold bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-400/20">
-              Fresh & Handcrafted
-            </span>
+        <div className="relative max-w-3xl mx-auto mb-20 text-center">
+          {/* FIXED: Dark elegant inversion container */}
+          <div className="relative bg-stone-900 border border-stone-800 p-8 sm:p-12 rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.15)] overflow-hidden">
+            {/* FIXED: High-impact underlying fire glow */}
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl pointer-events-none" />
             
-            {/* FIXED: High contrast white layout text mixing with bright sunset gradients */}
-            <h2 className="text-4xl font-black text-stone-50 tracking-tight md:text-5xl font-serif italic uppercase pt-1">
-              Island Flavors <span className="font-sans not-italic font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 block mt-2 sm:inline sm:mt-0">
-                & Cocktails
+            <div className="relative z-10 space-y-4">
+              {/* FIXED: Vibrant sunburst badge layout */}
+              <span className="inline-block text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber-400 font-bold bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-400/20">
+                Fresh & Handcrafted
               </span>
-            </h2>
-            
-            <div className="w-12 h-[2px] bg-orange-500/40 mx-auto my-4 rounded-full" />
-            
-            {/* FIXED: Muted light text for premium readable editorial contrast */}
-            <p className="text-stone-400 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed tracking-wide">
-              {isCarouselMode 
-                ? "Use your mouse wheel or swipe on mobile to explore our beachfront collection."
-                : "Sourced daily from local fishers and growers, mixed to perfection."}
-            </p>
+              
+              {/* FIXED: High contrast white layout text mixing with bright sunset gradients */}
+              <h2 className="text-4xl font-black text-stone-50 tracking-tight md:text-5xl font-serif italic uppercase pt-1">
+                Island Flavors <span className="font-sans not-italic font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 block mt-2 sm:inline sm:mt-0">
+                  & Cocktails
+                </span>
+              </h2>
+              
+              <div className="w-12 h-[2px] bg-orange-500/40 mx-auto my-4 rounded-full" />
+              
+              {/* FIXED: Muted light text for premium readable editorial contrast */}
+              <p className="text-stone-400 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed tracking-wide">
+                {isCarouselMode 
+                  ? "Use your mouse wheel or swipe on mobile to explore our beachfront collection."
+                  : "Sourced daily from local fishers and growers, mixed to perfection."}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
         {/* Category Filter Tabs */}
         <div className="flex justify-center items-center gap-2 p-1.5 bg-stone-200/60 backdrop-blur-sm rounded-full w-fit mx-auto mb-16 border border-stone-200">
@@ -188,13 +189,30 @@ export default function Menu() {
                 </svg>
               </button>
 
-              <div className="flex gap-1.5">
-                {filteredItems.map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-6 bg-amber-500' : 'w-1.5 bg-stone-300'}`}
-                  />
-                ))}
+              {/* --- RESPONSIVE DOTS MATRIX ENGINE --- */}
+              <div className="flex gap-1.5 items-center">
+                {filteredItems.map((_, i) => {
+                  const isFirstFew = currentIndex <= 1;
+                  const isLastFew = currentIndex >= filteredItems.length - 2;
+                  
+                  const isVisibleOnMobile = 
+                    isFirstFew ? i < 3 : 
+                    isLastFew ? i >= filteredItems.length - 3 : 
+                    Math.abs(i - currentIndex) <= 1;
+
+                  return (
+                    <div 
+                      key={i} 
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        i === currentIndex 
+                          ? 'w-6 bg-amber-500' 
+                          : 'w-1.5 bg-stone-300'
+                      } ${
+                        isVisibleOnMobile ? 'block' : 'hidden md:block'
+                      }`}
+                    />
+                  );
+                })}
               </div>
 
               <button 
@@ -210,7 +228,6 @@ export default function Menu() {
             </div>
           )}
         </div>
-
       </div>
     </section>
   );

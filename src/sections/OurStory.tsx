@@ -13,9 +13,9 @@ export default function OurStory() {
   } = useStory();
 
   return (
-    <section id="our-story" className="relative w-full bg-stone-50 py-24 sm:py-32 overflow-hidden select-none">
+    <section id="our-story" className="relative w-full bg-transparent py-24 sm:py-32 overflow-hidden select-none">
       {/* Background Graphic Accent Text */}
-      <div className="absolute left-[-3%] top-[5%] text-[16vw] font-serif font-black italic opacity-[0.025] text-stone-950 leading-none pointer-events-none uppercase tracking-tighter">
+      <div className="absolute left-[-3%] top-[5%] text-[16vw] font-serif font-black italic opacity-[0.035] text-stone-950 leading-none pointer-events-none uppercase tracking-tighter">
         Heritage
       </div>
 
