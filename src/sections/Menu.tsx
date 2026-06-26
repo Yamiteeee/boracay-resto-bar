@@ -1,102 +1,54 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'; 
 import Card from '@/components/Card';
-import { menuItems } from '@/data/menuData';
+import { useMenu } from '@/hooks/useMenu';
 
 export default function Menu() {
-  const [activeCategory, setActiveCategory] = useState<'all' | 'food' | 'drinks'>('all');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollCooldown = useRef(false);
-  const displayAreaRef = useRef<HTMLDivElement>(null); // Fixed: Safely handles scroll context
-  
-  // Responsive track spacing for cards (narrower on mobile screens)
-  const [xOffset, setXOffset] = useState(220);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setXOffset(window.innerWidth < 768 ? 140 : 220);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const filteredItems = menuItems.filter(item => 
-    activeCategory === 'all' ? true : item.category === activeCategory
-  );
-
-  const isCarouselMode = activeCategory === 'all';
-
-  const nextSlide = () => {
-    if (currentIndex < filteredItems.length - 1) setCurrentIndex(prev => prev + 1);
-  };
-
-  const prevSlide = () => {
-    if (currentIndex > 0) setCurrentIndex(prev => prev - 1);
-  };
-
-  // --- Mouse Wheel Carousel Scroll ---
-  useEffect(() => {
-    if (!isCarouselMode) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < 10) return;
-      e.preventDefault();
-
-      if (scrollCooldown.current) return;
-      scrollCooldown.current = true;
-
-      if (e.deltaY > 0) {
-        nextSlide();
-      } else {
-        prevSlide();
-      }
-
-      setTimeout(() => {
-        scrollCooldown.current = false;
-      }, 400);
-    };
-
-    const container = displayAreaRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener('wheel', handleWheel);
-      }
-    };
-  }, [currentIndex, isCarouselMode, filteredItems.length]);
-
-  // --- Mobile Drag/Swipe Gesture Handler ---
-  const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 40; // minimum pixels moved to trigger slide change
-    if (info.offset.x < -swipeThreshold) {
-      nextSlide();
-    } else if (info.offset.x > swipeThreshold) {
-      prevSlide();
-    }
-  };
+  const {
+    activeCategory,
+    currentIndex,
+    displayAreaRef,
+    xOffset,
+    filteredItems,
+    isCarouselMode,
+    nextSlide,
+    prevSlide,
+    handleDragEnd,
+    changeCategory
+  } = useMenu();
 
   return (
-    <section id="menu" className="py-28 bg-stone-50 select-none overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="menu" className="py-28 bg-stone-50 select-none overflow-hidden relative">
+      
+      {/* Editorial Watermark Accent Backdrop */}
+      <div className="absolute right-[-5%] bottom-[5%] text-[18vw] font-serif font-black italic opacity-[0.02] text-stone-950 leading-none pointer-events-none uppercase tracking-tighter">
+        Menu
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         
-        {/* Section Heading */}
-        <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <span className="text-xs uppercase tracking-widest text-amber-600 font-bold bg-amber-500/10 px-3 py-1 rounded-full">
-            Fresh & Handcrafted
-          </span>
-          <h2 className="text-4xl font-black text-stone-900 tracking-tight md:text-5xl font-serif italic capitalize pt-2">
-            Island Flavors <span className="font-sans not-italic font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-500">& Cocktails</span>
-          </h2>
-          <p className="text-stone-600/90 font-light text-base md:text-lg max-w-lg mx-auto leading-relaxed">
-            {isCarouselMode 
-              ? "Use your mouse wheel or swipe on mobile to explore our beachfront collection."
-              : "Sourced daily from local fishers and growers, mixed to perfection."}
-          </p>
+        {/* Luxury Spiced Separation Header Frame */}
+        <div className="relative max-w-3xl mx-auto mb-20 text-center">
+          <div className="relative bg-stone-100/80 backdrop-blur-md border border-stone-200/60 p-8 sm:p-12 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.02)] overflow-hidden">
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="relative z-10 space-y-4">
+              <span className="inline-block text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber-700 font-bold bg-amber-500/15 px-4 py-1.5 rounded-full border border-amber-500/20">
+                Fresh & Handcrafted
+              </span>
+              <h2 className="text-4xl font-black text-stone-900 tracking-tight md:text-5xl font-serif italic uppercase pt-1">
+                Island Flavors <span className="font-sans not-italic font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 block mt-2 sm:inline sm:mt-0">
+                  & Cocktails
+                </span>
+              </h2>
+              <div className="w-12 h-[2px] bg-stone-300 mx-auto my-4 rounded-full" />
+              <p className="text-stone-600 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed tracking-wide">
+                {isCarouselMode 
+                  ? "Use your mouse wheel or swipe on mobile to explore our beachfront collection."
+                  : "Sourced daily from local fishers and growers, mixed to perfection."}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Category Filter Tabs */}
@@ -104,10 +56,7 @@ export default function Menu() {
           {(['all', 'food', 'drinks'] as const).map((category) => (
             <button
               key={category}
-              onClick={() => {
-                setActiveCategory(category);
-                setCurrentIndex(0);
-              }}
+              onClick={() => changeCategory(category)}
               className="relative px-6 py-2.5 rounded-full text-xs md:text-sm font-semibold tracking-wider uppercase transition-all duration-300 overflow-hidden"
             >
               {activeCategory === category && (
@@ -127,10 +76,7 @@ export default function Menu() {
         </div>
 
         {/* Dynamic Display Area */}
-        <div 
-          ref={displayAreaRef} 
-          className="min-h-[520px] relative flex flex-col justify-center items-center w-full"
-        >
+        <div ref={displayAreaRef} className="min-h-[520px] relative flex flex-col justify-center items-center w-full">
           <AnimatePresence mode="wait">
             {isCarouselMode ? (
               /* --- WIDE COVERFLOW CAROUSEL MODE --- */
@@ -145,7 +91,6 @@ export default function Menu() {
                 <AnimatePresence initial={false}>
                   {filteredItems.map((item, index) => {
                     const offset = index - currentIndex;
-                    
                     if (Math.abs(offset) > 2) return null;
 
                     const isActive = offset === 0;
@@ -235,7 +180,6 @@ export default function Menu() {
                 </svg>
               </button>
 
-              {/* Progress dots */}
               <div className="flex gap-1.5">
                 {filteredItems.map((_, i) => (
                   <div 

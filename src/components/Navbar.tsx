@@ -1,63 +1,51 @@
 'use client';
-import { useState } from 'react';
-import Button from './Button';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Logo from '@/components/Logo';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Small buffer check to fire the change smoothly
+      setIsScrolled(window.scrollY > 15);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="absolute top-0 left-0 w-full z-50 bg-gradient-to-b from-stone-950/60 via-stone-950/20 to-transparent text-white select-none">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <header 
+      className={`fixed top-0 left-0 w-full z-50 select-none transition-all duration-500 ease-in-out ${
+        isScrolled 
+          ? 'bg-stone-950/80 backdrop-blur-md border-b border-stone-900/50 py-4 shadow-lg shadow-black/20' 
+          : 'bg-transparent border-b border-stone-900/0 py-6'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full flex items-center justify-between">
         
-        {/* Logo with Island Typography */}
-        <div className="text-2xl font-black tracking-widest uppercase font-sans">
-          Aplaya<span className="text-amber-400 font-serif italic lowercase tracking-normal font-normal ml-0.5">bar</span>
-        </div>
-
-        {/* Desktop Menu - Warm & Elegant */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide uppercase text-stone-200">
-          <a href="#hero" className="hover:text-amber-400 transition-colors duration-200">Home</a>
-          <a href="#menu" className="hover:text-amber-400 transition-colors duration-200">Menu</a>
-          <a href="#about" className="hover:text-amber-400 transition-colors duration-200">Our Story</a>
-          <Button 
-            variant="outline" 
-            className="text-xs py-2 px-5 border-white/20 text-white hover:bg-white/10 backdrop-blur-sm tracking-widest uppercase font-semibold"
-          >
-            Reserve Table
-          </Button>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="md:hidden text-stone-100 focus:outline-none p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10"
-          aria-label="Toggle Menu"
+        {/* Left Side: Scaled Logo Unit */}
+        <Link 
+          href="#hero" 
+          className="origin-left transform scale-[0.65] sm:scale-[0.75] hover:opacity-90 transition-all duration-300"
         >
-          <svg className="w-6 h-6 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-      </div>
+          <Logo iconSize={36} />
+        </Link>
 
-      {/* Upgraded Mobile Dropdown - Warm Beach House Aesthetics */}
-      {isOpen && (
-        <div className="md:hidden bg-stone-900/90 border-b border-white/5 backdrop-blur-lg absolute top-20 left-0 w-full p-6 flex flex-col gap-5 shadow-2xl tracking-wider text-center uppercase font-medium text-stone-300">
-          <a href="#hero" onClick={() => setIsOpen(false)} className="hover:text-amber-400 py-1 transition-colors">Home</a>
-          <a href="#menu" onClick={() => setIsOpen(false)} className="hover:text-amber-400 py-1 transition-colors">Menu</a>
-          <a href="#about" onClick={() => setIsOpen(false)} className="hover:text-amber-400 py-1 transition-colors">Our Story</a>
-          <hr className="border-white/10 my-1" />
-          <Button 
-            variant="primary" 
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 border-none text-stone-950 font-bold tracking-widest py-3"
+        {/* Right Side: Editorial Minimal Navigation Links */}
+        <nav className="flex items-center gap-6 sm:gap-8 text-[11px] font-sans font-bold tracking-[0.25em] uppercase text-stone-400">
+          <a href="#our-story" className="hover:text-amber-500 transition-colors duration-200">Story</a>
+          <a href="#menu" className="hover:text-amber-500 transition-colors duration-200">Menu</a>
+          <a 
+            href="#reserve" 
+            className="px-4 py-2 border border-amber-600/30 rounded text-amber-500 hover:bg-amber-500 hover:text-stone-950 hover:border-amber-500 transition-all duration-300 hidden sm:block"
           >
-            Reserve Table
-          </Button>
-        </div>
-      )}
-    </nav>
+            Reservations
+          </a>
+        </nav>
+
+      </div>
+    </header>
   );
 }
